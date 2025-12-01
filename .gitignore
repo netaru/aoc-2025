@@ -1,0 +1,9 @@
+/.cache/
+/00-test-file/
+/build/
+/compile_commands.json
+**input.txt
+**instructions.html
+**instructions.org
+**result.org
+**test.txt
