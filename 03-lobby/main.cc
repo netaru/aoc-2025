@@ -1,4 +1,4 @@
-#include <cstddef>
+#include <algorithm>
 #include <iostream>
 #include <print>
 #include <ranges>
@@ -9,36 +9,21 @@
 
 using namespace std;
 
-size_t find_largest(span<i64> bank, size_t index, int end) {
-    int max = 0;
-    for (size_t u = index; u < end; u++) {
-        if (bank[u] > max) {
-            index = u;
-            max   = bank[u];
-        }
-    }
-    return index;
-}
-
-i64 max_voltage(span<i64> bank, size_t n) {
+template <int n>
+i64 max_voltage(span<i64> bank) {
     i64 sum = 0;
-    size_t index = 0;
-    for (size_t u = 0; u < n; ++u) {
-        size_t where = find_largest(bank, index, bank.size() - (n - (u + 1)));
-        sum = sum * 10 + bank[where];
-        index = where + 1;
+    auto index = bank.begin(), end = bank.begin() + (bank.size() - n + 1);
+    for (size_t u = 0; u < n; ++u, index += 1, end += 1) {
+        index = max_element(index, end);
+        sum = sum * 10 + *index;
     }
     return sum;
 }
 
 int main(int argc, char *argv[]) {
-    i64 part1 = 0, part2 = 0;
-    for (const auto line : read_lines(cin)) {
-        auto bank = line | vs::transform([](char c) -> i64 { return c - '0'; }) | rs::to<vector>();
-        part1 += max_voltage(bank, 2);
-        part2 += max_voltage(bank, 12);
-    }
-    println("Part1: {}", part1);
-    println("Part2: {}", part2);
+    auto fun = [](string s) { return s | vs::transform([](char c) -> i64 { return c - '0'; }) | rs::to<vector>(); };
+    auto banks = read_lines(cin) | vs::transform(fun) | rs::to<vector>();
+    println("Part1: {}", rs::fold_left(banks | vs::transform(max_voltage<2>), 0, plus<i64>()));
+    println("Part2: {}", rs::fold_left(banks | vs::transform(max_voltage<12>), 0, plus<i64>()));
     return 0;
 }
