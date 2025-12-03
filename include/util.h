@@ -468,4 +468,16 @@ inline size_t count_occurrences(std::string_view sv, std::string_view which) {
     return sz;
 }
 
+template<typename T>
+inline T mod(T v, T m) {
+    return ((v %= m) < 0) ? v + m : v;
+}
+
+inline std::string replace(std::string s, std::string_view from, std::string_view to) {
+    for (std::string::size_type n = 0; true; n+=from.size()) {
+        if ((n = s.find(from, n)) == std::string::npos) { break; }
+        s.replace(n, from.size(), to);
+    }
+    return s;
+}
 };

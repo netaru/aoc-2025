@@ -33,7 +33,7 @@ bool is_valid_strict(i64 x) {
 
 int main(int argc, char *argv[]) {
     i64 part1 = 0, part2 = 0;
-    for (auto rn : ints<i64>(join(split(read(cin), "-"), " ")) | vs::chunk(2)) {
+    for (auto rn : ints<i64>(dave::replace(read(cin), "-", " ")) | vs::chunk(2)) {
         for (i64 x = rn[0]; x <= rn[1]; x++) {
             if (!is_valid(x)) { part1 += x; }
             if (!is_valid_strict(x)) { part2 += x; }
