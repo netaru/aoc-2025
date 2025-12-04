@@ -332,7 +332,7 @@ struct plane {
         return result;
     }
 
-    std::vector<pos> find(T v) {
+    std::vector<pos> find(T v) const {
         std::vector<pos> result;
         result.reserve(data.size() * data[0].size());
         for (i64 y = 0; y < data.size(); ++y) {
