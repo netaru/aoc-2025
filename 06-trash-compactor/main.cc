@@ -8,7 +8,7 @@
 
 using namespace std;
 
-i64 calc(vector<string> row) {
+i64 calc(span<string> row) {
     i64 init = 0;
     function<i64(i64, i64)> fn = plus<i64>();
     if (row[0][0] == '*') {
@@ -18,7 +18,7 @@ i64 calc(vector<string> row) {
     return rs::fold_left(row | vs::drop(1) | vs::transform([](string s) { return stoi(s); }), init, fn);
 }
 
-i64 cephalopod_maths(vector<string> input) {
+i64 cephalopod_maths(span<string> input) {
     i64 sum = 0;
     vector<i64> tmp;
     for (auto s : input) {
@@ -37,7 +37,8 @@ i64 cephalopod_maths(vector<string> input) {
 int main(int argc, char *argv[]) {
     plane<char> part2(cin);
     plane<string> part1(part2.as_string());
+    auto xs = split(part2.rotate_left().as_string(), "\n");
     println("Part1: {}", rs::fold_left(part1.rotate_right().data | vs::transform(calc), 0ll, plus<i64>()));
-    println("Part2: {}", cephalopod_maths(split(part2.rotate_left().as_string(), "\n")));
+    println("Part2: {}", cephalopod_maths(xs));
     return 0;
 }

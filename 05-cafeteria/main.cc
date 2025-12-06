@@ -22,9 +22,9 @@ struct lohi {
     }
 };
 
-vector<lohi> merge(vector<lohi> in) {
+vector<lohi> merge(span<lohi> in) {
     vector<lohi> result;
-    vector<lohi>::iterator first, second;
+    span<lohi>::iterator first, second;
     for (first = in.begin(); first < in.end(); first = second) {
         second = first + 1;
         lohi current(*first);
@@ -36,7 +36,8 @@ vector<lohi> merge(vector<lohi> in) {
 
 vector<lohi> parse(vector<string> input) {
     vector<lohi> intervals = input | vs::transform([](string s) { return lohi(ints<i64>(s)); }) | rs::to<vector>();
-    return merge(dave::sort(intervals, [](auto lhs, auto rhs) { return lhs.low < rhs.low; }));
+    rs::sort(intervals, [](auto lhs, auto rhs) { return lhs.low < rhs.low; });
+    return merge(intervals);
 }
 
 int main(int argc, char *argv[]) {

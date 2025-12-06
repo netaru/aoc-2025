@@ -7,12 +7,15 @@
 
 using namespace std;
 
-auto removable(const plane<char> &plane) {
-    auto fun = [&plane](pos p) -> bool {
+auto removable_pred(const plane<char> &plane) {
+    return [&plane](pos p) -> bool {
         return rs::count_if(add(p, compass), [&plane](pos at) { return plane.get(at) == '@'; }) < 4;
     };
+}
+
+auto removable(const plane<char> &plane) {
     vector<pos> result;
-    rs::copy_if(plane.find('@'), back_inserter(result), fun);
+    rs::copy_if(plane.find('@'), back_inserter(result), removable_pred(plane));
     return result;
 }
 
