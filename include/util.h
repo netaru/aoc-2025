@@ -210,11 +210,15 @@ struct plane {
         data_t result;
         for (auto line : lines) {
             row_t vec;
-            for (auto ch : line) {
-                if constexpr (std::is_same_v<T, char>) {
-                    vec.push_back(ch);
-                } else {
-                    vec.push_back(static_cast<T>(ch - '0'));
+            if constexpr (std::is_same_v<T, std::string>) {
+                vec = split(line);
+            } else {
+                for (auto ch : line) {
+                    if constexpr (std::is_same_v<T, char>) {
+                        vec.push_back(ch);
+                    } else {
+                        vec.push_back(static_cast<T>(ch - '0'));
+                    }
                 }
             }
             result.push_back(vec);
@@ -480,4 +484,5 @@ inline std::string replace(std::string s, std::string_view from, std::string_vie
     }
     return s;
 }
+inline constexpr vs::_Transform map;
 };
