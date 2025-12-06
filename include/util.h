@@ -464,10 +464,16 @@ inline bool next_combination(auto &indices, size_t limit) {
     return false;
 }
 
+template <bool overlap = true>
 inline size_t count_occurrences(std::string_view sv, std::string_view which) {
     size_t sz = 0;
-    for (std::string_view::size_type n = 0; true; n++, sz++) {
+    for (std::string_view::size_type n = 0; true; sz++) {
         if ((n = sv.find(which, n)) == std::string_view::npos) { break; }
+        if constexpr (overlap) {
+            n++;
+        } else {
+            n += which.size();
+        }
     }
     return sz;
 }
