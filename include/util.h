@@ -379,6 +379,12 @@ struct plane {
         return rs::max(data | vs::transform([](auto v) { return v.size(); }));
     }
 
+    void apply(auto fn) {
+        for (size_t y = 0; y < data.size(); ++y) {
+            for (size_t x = 0; x < data[y].size(); ++x) { fn(x, y, data[y][x]); }
+        }
+    }
+
    private:
     inline plane<T> &transform(auto &xs, auto &ys) {
         data_t ndata;
