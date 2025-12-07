@@ -18,7 +18,7 @@ bool is_valid(i64 x) {
     string s = to_string(x);
     size_t len = s.size() / 2;
     if constexpr (part == 1) {
-        if (s.size() % 2 != 0) { return true; }
+        if (s.size() % 2 != 0) return true;
         return !repeated(s, len);
     } else {
         for (size_t u = 1; u <= len; u++) {

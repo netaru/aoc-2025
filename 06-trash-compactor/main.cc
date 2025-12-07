@@ -3,32 +3,31 @@
 #include <print>
 #include <ranges>
 #include <string>
+#include <utility>
 
 #include "util.h"
 
 using namespace std;
 
-i64 calc(span<string> row) {
-    i64 init = 0;
-    function<i64(i64, i64)> fn = plus<i64>();
-    if (row[0][0] == '*') {
-        init = 1;
-        fn = multiplies<i64>();
-    }
-    return rs::fold_left(row | vs::drop(1) | vs::transform([](string s) { return stoi(s); }), init, fn);
+pair<i64, function<i64(i64, i64)>> setup(char c) {
+    if (c == '*') return { 1l, multiplies<i64>() };
+    return { 0l, plus<i64>() };
 }
 
-i64 cephalopod_maths(span<string> input) {
+i64 calc(span<string> ss) {
+    const auto &[init, fn] = setup(ss[0][0]);
+    return rs::fold_left(ss | vs::drop(1) | vs::transform([](string s) { return stol(s); }), init, fn);
+}
+
+i64 cephalopod_maths(span<string> ss) {
     i64 sum = 0;
-    vector<i64> tmp;
-    for (auto s : input) {
-        tmp.push_back(stoi(s));
-        if (s.contains("*")) {
-            sum += rs::fold_left(tmp, 1ll, multiplies<i64>());
-            tmp.clear();
-        } else if (s.contains("+")) {
-            sum += rs::fold_left(tmp, 0ll, plus<i64>());
-            tmp.clear();
+    vector<i64> current;
+    for (const auto &s : ss) {
+        current.push_back(stol(s));
+        if (char c = s.back(); "*+"sv.contains(c)) {
+            const auto &[init, fn] = setup(c);
+            sum += rs::fold_left(current, init, fn);
+            current.clear();
         }
     }
     return sum;

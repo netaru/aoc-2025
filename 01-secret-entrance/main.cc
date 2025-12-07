@@ -18,7 +18,7 @@ int part1(span<int> xs) {
 int part2(span<int> xs) {
     auto fn = [dial = 50](int x) mutable {
         int count = abs(x / 100), mod = x % 100;
-        if ((x < 0 and dial != 0 and dial + mod <= 0) or (x > 0 and dial + mod >= 100)) { count++; }
+        if ((x < 0 and dial != 0 and dial + mod <= 0) or (x > 0 and dial + mod >= 100)) count++;
         dial = dave::mod(dial + x, 100);
         return count;
     };
