@@ -6,6 +6,7 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <format>
 #include <functional>
 #include <istream>
 #include <iterator>
@@ -136,6 +137,25 @@ template <typename T>
 std::string join(const T &values, std::string_view delimiter) {
     return join(values.cbegin(), values.cend(), delimiter);
 }
+
+struct pos3 {
+    i64 x, y, z;
+    size_t euclidean_distance(const pos3 &other) const {
+        return sqrt(powl(x - other.x, 2) + powl(y - other.y, 2) + powl(z - other.z, 2));
+    }
+
+    std::string as_string() const { return std::format("pos3 [x: {}, y: {}, z: {}]", x, y, z); }
+};
+
+struct edge {
+    size_t i, j, weight;
+    edge(size_t _i, size_t _j, size_t _weight) : i(_i), j(_j), weight(_weight) {}
+
+    std::string as_string() const { return std::format("edge [i: {}, j: {}, weight: {}]", i, j, weight); }
+};
+
+inline bool operator<(const edge &lhs, const edge &rhs) { return lhs.weight < rhs.weight; }
+inline bool operator>(const edge &lhs, const edge &rhs) { return !operator<(lhs, rhs); }
 
 using pos = std::complex<i64>;
 using history = std::unordered_set<pos>;
