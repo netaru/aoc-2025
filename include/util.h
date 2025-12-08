@@ -140,6 +140,10 @@ std::string join(const T &values, std::string_view delimiter) {
 
 struct pos3 {
     i64 x, y, z;
+
+    pos3(i64 _x, i64 _y, i64 _z) : x(_x), y(_y), z(_z) {}
+    pos3(auto v) : pos3(v[0], v[1], v[2]) {}
+
     size_t euclidean_distance(const pos3 &other) const {
         return sqrt(powl(x - other.x, 2) + powl(y - other.y, 2) + powl(z - other.z, 2));
     }
@@ -232,6 +236,7 @@ struct union_find {
 
     size_t merge(size_t x, size_t y) {
         size_t root1 = find(x), root2 = find(y);
+        if (root1 == root2) return cnt;
         if (sz[root1] < sz[root2]) {
             id[root1] = root2;
             sz[root2] += sz[root1];
