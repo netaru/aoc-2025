@@ -218,10 +218,10 @@ struct std::hash<std::pair<pos, pos>> {
 };
 
 struct union_find {
-    size_t cnt;
+    size_t count;
     std::vector<size_t> id, sz;
 
-    union_find(size_t sz) : cnt(sz), id(vs::iota(0ul, sz) | rs::to<std::vector>()), sz(sz, 1) {}
+    union_find(size_t sz) : count(sz), id(vs::iota(0ul, sz) | rs::to<std::vector>()), sz(sz, 1) {}
 
     size_t find(size_t obj) {
         size_t root = obj;
@@ -236,7 +236,7 @@ struct union_find {
 
     size_t merge(size_t x, size_t y) {
         size_t root1 = find(x), root2 = find(y);
-        if (root1 == root2) return cnt;
+        if (root1 == root2) return count;
         if (sz[root1] < sz[root2]) {
             id[root1] = root2;
             sz[root2] += sz[root1];
@@ -246,12 +246,12 @@ struct union_find {
             sz[root1] += sz[root2];
             sz[root2] = 0;
         }
-        return --cnt;
+        return --count;
     }
 
     bool connected(size_t x, size_t y) { return find(x) == find(y); }
 
-    size_t size() { return cnt; }
+    size_t size() { return count; }
 };
 
 template <typename T = char>
