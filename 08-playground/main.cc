@@ -11,7 +11,6 @@ using namespace std;
 
 struct point {
     i64 x, y, z;
-
     i64 euclidean_distance(const point &other) const {
         return sqrt(powl(x - other.x, 2) + powl(y - other.y, 2) + powl(z - other.z, 2));
     }
@@ -35,9 +34,7 @@ int main(int argc, char *argv[]) {
     vector<set<point>> circuits;
     for (auto values : ints<i64>(read(cin)) | vs::chunk(3)) {
         points.emplace_back(values[0], values[1], values[2]);
-        set<point> circuit;
-        circuit.insert(points.back());
-        circuits.emplace_back(circuit);
+        circuits.emplace_back(set<point>{ points.back() });
     }
     for (auto first = points.cbegin(); first < points.cend(); ++first) {
         for (auto second = first + 1; second < points.cend(); ++second) { connections.emplace_back(*first, *second); }
@@ -48,20 +45,18 @@ int main(int argc, char *argv[]) {
 
     i64 n = 0, part1, part2;
     for (auto iter = connections.cbegin(); true; iter++, n++) {
-        connection c = *iter;
-        auto first = find_circuit(c.p);
-        auto second = find_circuit(c.q);
-        if (first == second) { continue; }
-        for (auto p : *second) { first->insert(p); }
-        circuits.erase(second);
-        if (circuits.size() == 1) {
-            part2 = c.p.x * c.q.x;
-            break;
-        }
-        if (n == 1000) {
-            rs::sort(circuits, [](auto lhs, auto rhs) { return lhs.size() > rhs.size(); });
-            part1 = rs::fold_left(
-                    circuits | vs::take(3) | vs::transform([](auto x) { return x.size(); }), 1l, multiplies<>());
+        if (auto first = find_circuit(iter->p), second = find_circuit(iter->q); first != second) {
+            for (auto p : *second) { first->insert(p); }
+            circuits.erase(second);
+
+            if (circuits.size() == 1) {
+                part2 = iter->p.x * iter->q.x;
+                break;
+            }
+            if (n == 1000) {
+                rs::sort(circuits, [](auto lhs, auto rhs) { return lhs.size() > rhs.size(); });
+                part1 = rs::fold_left(circuits | vs::take(3) | vs::transform(&set<point>::size), 1l, multiplies<>());
+            }
         }
     }
     println("Part1: {}", part1);

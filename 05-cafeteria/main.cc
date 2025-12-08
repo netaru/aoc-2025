@@ -48,6 +48,6 @@ int main(int argc, char *argv[]) {
     };
     auto is_fresh = [&in_any_range](i64 v) -> i64 { return in_any_range(v) ? 1 : 0; };
     println("Part1: {}", rs::fold_left(ints<i64>(input[1]) | vs::transform(is_fresh), 0ll, plus<i64>()));
-    println("Part2: {}", rs::fold_left(intervals | vs::transform([](auto i) { return i.count(); }), 0ll, plus<i64>()));
+    println("Part2: {}", rs::fold_left(intervals | vs::transform(&lohi::count), 0ll, plus<i64>()));
     return 0;
 }
