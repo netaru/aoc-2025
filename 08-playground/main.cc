@@ -1,61 +1,30 @@
-#include <algorithm>
-#include <functional>
 #include <iostream>
 #include <print>
-#include <ranges>
-#include <set>
+#include <queue>
 
 #include "util.h"
 
 using namespace std;
 
-struct point {
-    i64 x, y, z;
-    i64 euclidean_distance(const point &other) const {
-        return sqrt(powl(x - other.x, 2) + powl(y - other.y, 2) + powl(z - other.z, 2));
-    }
-};
-
-bool operator<(const point &lhs, const point &rhs) {
-    if (lhs.x != rhs.x) { return lhs.x < rhs.x; }
-    if (lhs.y != rhs.y) { return lhs.y < rhs.y; }
-    return lhs.z < rhs.z;
-}
-
-struct connection {
-    point p, q;
-    i64 distance;
-    connection(point p1, point p2) : p(p1), q(p2), distance(p.euclidean_distance(q)) {}
-};
-
 int main(int argc, char *argv[]) {
-    vector<point> points;
-    vector<connection> connections;
-    vector<set<point>> circuits;
-    for (auto values : ints<i64>(read(cin)) | vs::chunk(3)) {
-        points.emplace_back(values[0], values[1], values[2]);
-        circuits.emplace_back(set<point>{ points.back() });
+    vector<pos3> points;
+    priority_queue<edge, vector<edge>, greater<edge>> edges;
+    for (auto values : ints<i64>(read(cin)) | vs::chunk(3)) { points.emplace_back(values[0], values[1], values[2]); }
+    for (size_t i = 0; i < points.size(); ++i) {
+        for (auto j = i + 1; j < points.size(); ++j) { edges.emplace(i, j, points[i].euclidean_distance(points[j])); }
     }
-    for (auto first = points.cbegin(); first < points.cend(); ++first) {
-        for (auto second = first + 1; second < points.cend(); ++second) { connections.emplace_back(*first, *second); }
-    }
-    rs::sort(connections, [](auto lhs, auto rhs) { return lhs.distance < rhs.distance; });
-    auto find_circuit(
-            [&](point p) { return rs::find_if(circuits, [&p](auto circuit) { return circuit.contains(p); }); });
 
     i64 n = 0, part1, part2;
-    for (auto iter = connections.cbegin(); true; iter++, n++) {
-        if (auto first = find_circuit(iter->p), second = find_circuit(iter->q); first != second) {
-            for (auto p : *second) { first->insert(p); }
-            circuits.erase(second);
-
-            if (circuits.size() == 1) {
-                part2 = iter->p.x * iter->q.x;
-                break;
-            }
-            if (n == 1000) {
-                rs::sort(circuits, [](auto lhs, auto rhs) { return lhs.size() > rhs.size(); });
-                part1 = rs::fold_left(circuits | vs::take(3) | vs::transform(&set<point>::size), 1l, multiplies<>());
+    auto uf = union_find(points.size());
+    for (; !edges.empty() and uf.size() > 1; edges.pop(), ++n) {
+        edge e = edges.top();
+        if (!uf.connected(e.i, e.j)) {
+            if (uf.merge(e.i, e.j) == 1) {
+                part2 = points[e.i].x * points[e.j].x;
+            } else if (n == 1000) {
+                auto sz = uf.sz;
+                rs::sort(sz, greater<>());
+                part1 = rs::fold_left(sz | vs::take(3), 1l, multiplies<>());
             }
         }
     }

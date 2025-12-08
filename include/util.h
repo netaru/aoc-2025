@@ -230,7 +230,7 @@ struct union_find {
         return root;
     }
 
-    void merge(size_t x, size_t y) {
+    size_t merge(size_t x, size_t y) {
         size_t root1 = find(x), root2 = find(y);
         if (sz[root1] < sz[root2]) {
             id[root1] = root2;
@@ -241,7 +241,7 @@ struct union_find {
             sz[root1] += sz[root2];
             sz[root2] = 0;
         }
-        cnt--;
+        return --cnt;
     }
 
     bool connected(size_t x, size_t y) { return find(x) == find(y); }
