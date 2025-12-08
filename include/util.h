@@ -213,6 +213,42 @@ struct std::hash<std::pair<pos, pos>> {
     }
 };
 
+struct union_find {
+    size_t cnt;
+    std::vector<size_t> id, sz;
+
+    union_find(size_t sz) : cnt(sz), id(vs::iota(0ul, sz) | rs::to<std::vector>()), sz(sz, 1) {}
+
+    size_t find(size_t obj) {
+        size_t root = obj;
+        while (root != id[root]) root = id[root];
+        while (obj != root) {
+            size_t newobj = id[obj];
+            id[obj] = root;
+            obj = newobj;
+        }
+        return root;
+    }
+
+    void merge(size_t x, size_t y) {
+        size_t root1 = find(x), root2 = find(y);
+        if (sz[root1] < sz[root2]) {
+            id[root1] = root2;
+            sz[root2] += sz[root1];
+            sz[root1] = 0;
+        } else {
+            id[root2] = root1;
+            sz[root1] += sz[root2];
+            sz[root2] = 0;
+        }
+        cnt--;
+    }
+
+    bool connected(size_t x, size_t y) { return find(x) == find(y); }
+
+    size_t size() { return cnt; }
+};
+
 template <typename T = char>
 struct plane {
     using row_t = std::vector<T>;
