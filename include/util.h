@@ -176,6 +176,10 @@ inline pos char_to_pos(char c) {
     if (__char_to_pos.contains(c)) { return __char_to_pos.at(c); }
     return { 0, 0 };
 }
+
+inline pos to_pos(std::span<i64> v) { return { v[0], v[1] }; }
+inline i64 x(pos p) { return p.real(); }
+inline i64 y(pos p) { return p.imag(); }
 };
 
 const std::array<pos, 4> cardinal{ dave::N, dave::E, dave::S, dave::W };
