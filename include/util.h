@@ -6,6 +6,7 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <deque>
 #include <format>
 #include <functional>
 #include <istream>
@@ -483,6 +484,29 @@ auto pop(auto &q) {
     q.pop_front();
     return p;
 }
+
+struct truth_table {
+    std::unordered_map<size_t, std::vector<std::vector<bool>>> cache;
+
+    std::vector<std::vector<bool>> operator()(size_t n) {
+        if (cache.contains(n)) { return cache[n]; }
+        std::vector<std::vector<bool>> tt;
+        std::deque<std::vector<bool>> q{ std::vector{ false }, std::vector{ true } };
+        while (!q.empty()) {
+            std::vector<bool> current = pop(q);
+            if (current.size() == n) {
+                tt.push_back(current);
+            } else {
+                std::vector<bool> copy = current;
+                copy.emplace_back(false);
+                q.push_back(copy);
+                current.emplace_back(true);
+                q.push_back(current);
+            }
+        }
+        return cache[n] = tt;
+    }
+};
 
 namespace dave {
 
