@@ -532,6 +532,48 @@ inline std::vector<T> vmerge(std::vector<T> lhs, std::vector<T> rhs) {
     return rhs;
 }
 
+template <typename T>
+constexpr std::vector<T> vplus(const std::vector<T> lhs, const std::vector<T> rhs) {
+    return vs::zip_transform(std::plus<>(), lhs, rhs) | rs::to<std::vector>();
+}
+
+template <typename T>
+constexpr std::vector<T> vminus(const std::vector<T> lhs, const std::vector<T> rhs) {
+    return vs::zip_transform(std::minus<>(), lhs, rhs) | rs::to<std::vector>();
+}
+
+template <typename T>
+constexpr std::vector<T> vmultiples(const std::vector<T> lhs, const std::vector<T> rhs) {
+    return vs::zip_transform(std::multiplies<>(), lhs, rhs) | rs::to<std::vector>();
+}
+
+template <typename T>
+constexpr std::vector<T> vdivides(const std::vector<T> lhs, const std::vector<T> rhs) {
+    if (rs::count(rhs, 0) > 0) { return lhs; }
+    return vs::zip_transform(std::divides<>(), lhs, rhs) | rs::to<std::vector>();
+}
+
+template <typename T>
+constexpr std::vector<T> plus(const std::vector<T> lhs, const T rhs) {
+    return lhs | vs::transform([&rhs](auto x) { return x + rhs; }) | rs::to<std::vector>();
+}
+
+template <typename T>
+constexpr std::vector<T> minus(const std::vector<T> lhs, const T rhs) {
+    return lhs | vs::transform([&rhs](auto x) { return x - rhs; }) | rs::to<std::vector>();
+}
+
+template <typename T>
+constexpr std::vector<T> multiples(const std::vector<T> lhs, const T rhs) {
+    return lhs | vs::transform([&rhs](auto x) { return x * rhs; }) | rs::to<std::vector>();
+}
+
+template <typename T>
+constexpr std::vector<T> divides(const std::vector<T> lhs, const T rhs) {
+    if (rhs == 0) { return lhs; }
+    return lhs | vs::transform([&rhs](auto x) { return x / rhs; }) | rs::to<std::vector>();
+}
+
 inline std::string remove(std::string s, char c = '\n') {
     auto ret = rs::remove(s, c);
     s.erase(ret.begin(), ret.end());

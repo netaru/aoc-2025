@@ -13,7 +13,7 @@ using namespace std;
 
 struct machine {
     vector<bool> which;
-    vector<vector<size_t>> buttons;
+    vector<vector<i64>> buttons;
     vector<i64> voltage;
     map<vector<bool>, vector<pair<vector<bool>, i64>>> patterns;
     map<vector<i64>, i64> cache;
@@ -24,7 +24,9 @@ struct machine {
                 which = s | vs::filter([](char c) { return !"[]"sv.contains(c); }) |
                         vs::transform([](char c) { return c == '#'; }) | rs::to<vector>();
             } else if (s[0] == '(') {
-                buttons.push_back(ints<size_t>(s));
+                vector<i64> button(which.size(), 0);
+                for (auto i : ints<i64>(s)) { button[i]++; }
+                buttons.push_back(button);
             } else {
                 voltage = ints<i64>(s);
             }
@@ -32,7 +34,9 @@ struct machine {
         for (auto pressed : tt(buttons.size())) {
             vector<bool> m(voltage.size(), false);
             for (auto [current, _] : vs::zip(buttons, pressed) | vs::filter([](auto p) { return get<1>(p); })) {
-                for (auto i : current) { m[i] = !m[i]; }
+                for (size_t u = 0; u < current.size(); ++u) {
+                    if (current[u] > 0) { m[u] = !m[u]; }
+                }
             }
             patterns[m].push_back({ pressed, rs::count(pressed, true) });
         }
@@ -48,15 +52,10 @@ struct machine {
 
         i64 result = 1000000;
         for (const auto &[pattern, cost] : patterns[build(values)]) {
-            vector<i64> dvalues(values.size(), 0);
-            for (auto [current, _] : vs::zip(buttons, pattern) | vs::filter([](auto p) { return get<1>(p); })) {
-                for (auto i : current) dvalues[i]++;
-            }
-            if (rs::all_of(vs::zip(dvalues, values), [](auto vs) { return get<0>(vs) <= get<1>(vs); })) {
-                auto nvalues = vs::enumerate(values) |
-                               vs::transform([&](auto vs) { return (get<1>(vs) - dvalues[get<0>(vs)]) / 2; }) |
-                               rs::to<vector>();
-                result = min(result, 2 * solve(nvalues) + cost);
+            auto pressed = vs::zip(buttons, pattern) | vs::filter([](auto p) { return get<1>(p); }) | vs::keys;
+            vector<i64> delta = rs::fold_left(pressed, vector<i64>(values.size(), 0), dave::vplus<i64>);
+            if (rs::all_of(vs::zip(delta, values), [](auto vs) { return get<0>(vs) <= get<1>(vs); })) {
+                result = min(result, 2 * solve(dave::divides(dave::vminus(values, delta), 2l)) + cost);
             }
         }
         return cache[values] = result;
