@@ -62,7 +62,7 @@ struct machine {
     }
 
     i64 part1() {
-        return rs::min(patterns[which] | vs::transform([](auto v) { return v.second; }));
+        return rs::min(patterns[which] | vs::values);
     }
     i64 part2() { return solve(voltage); }
 };
