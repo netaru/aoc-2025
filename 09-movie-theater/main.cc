@@ -16,9 +16,7 @@ struct theater {
     theater(istream &is) : points(ints<i64>(read(is)) | vs::chunk(2) | vs::transform(dave::to_pos) | rs::to<vector>()) {
         for (size_t i = 0; i < points.size(); ++i) { lines.emplace_back(i, (i + 1) % points.size()); }
         auto area = [](pos p, pos q) -> i64 { return (abs(p.real() - q.real()) + 1) * (abs(p.imag() - q.imag()) + 1); };
-        for (size_t i = 0; i < points.size(); ++i) {
-            for (size_t j = i + 1; j < points.size(); ++j) { rects.emplace(i, j, area(points[i], points[j])); }
-        }
+        for (const auto &[i, j] : dave::unique_pairs(points)()) { rects.emplace(i, j, area(points[i], points[j])); }
     }
 
     bool less(auto xs) { return max(xs[0], xs[1]) <= min(xs[2], xs[3]); }

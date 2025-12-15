@@ -9,6 +9,7 @@
 #include <deque>
 #include <format>
 #include <functional>
+#include <generator>
 #include <istream>
 #include <iterator>
 #include <optional>
@@ -627,5 +628,18 @@ inline std::string replace(std::string s, std::string_view from, std::string_vie
     }
     return s;
 }
+
+struct unique_pairs {
+    size_t limit, i, j;
+
+    unique_pairs(const auto &v) : limit(v.size()) {}
+
+    std::generator<std::pair<size_t, size_t>> operator()() {
+        for (i = 0; i < limit; ++i) {
+            for (j = i + 1; j < limit; ++j) { co_yield { i, j }; }
+        }
+    }
+};
+
 inline constexpr vs::_Transform map;
 };

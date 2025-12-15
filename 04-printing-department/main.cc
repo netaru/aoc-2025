@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <iostream>
-#include <iterator>
 #include <print>
+#include <ranges>
 
 #include "util.h"
 
@@ -14,9 +14,7 @@ auto removable_pred(const plane<char> &plane) {
 }
 
 auto removable(const plane<char> &plane) {
-    vector<pos> result;
-    rs::copy_if(plane.find('@'), back_inserter(result), removable_pred(plane));
-    return result;
+    return plane.find('@') | vs::filter(removable_pred(plane)) | rs::to<vector>();
 }
 
 int main(int argc, char *argv[]) {

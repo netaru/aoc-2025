@@ -11,8 +11,8 @@ int main(int argc, char *argv[]) {
     vector<pos3> points;
     priority_queue<edge, vector<edge>, greater<edge>> edges;
     for (auto values : ints<i64>(read(cin)) | vs::chunk(3)) { points.emplace_back(values); }
-    for (size_t i = 0; i < points.size(); ++i) {
-        for (auto j = i + 1; j < points.size(); ++j) { edges.emplace(i, j, points[i].euclidean_distance(points[j])); }
+    for (const auto &[i, j] : dave::unique_pairs(points)()) {
+        edges.emplace(i, j, points[i].euclidean_distance(points[j]));
     }
 
     i64 n = 0, part1, part2;
